@@ -3,7 +3,8 @@ myapp.controller('IndexCtrl', function($scope, $timeout, $http) {
     $scope.name;
     var socket;
     $scope.nginmsg = "";
-    $scope.ngcount = [];  
+    $scope.ngcount = 0;  
+    $scope.ngusers = [];  
     $(function() {
         $scope.name = prompt("請輸入暱稱", "");
         socket = io.connect('/');
@@ -11,7 +12,10 @@ myapp.controller('IndexCtrl', function($scope, $timeout, $http) {
             location.reload();
         } else {
             //count(JSON.parse("[" + $scope.name + "]"));
-            
+            var temp =[];
+            temp.push($scope.name);
+            fnusers(temp);
+            count(1);
             $('#msg').prepend('<li>' + $scope.name + '進來了' + '</li>');
             socket.emit('online', $scope.name);
         };
@@ -36,21 +40,25 @@ myapp.controller('IndexCtrl', function($scope, $timeout, $http) {
         //上限
         socket.on('online', function(data) {
             $('#msg').prepend('<li>' + data.message + '</li>');
+            fnusers(data.users);
             count(data.count);
         });
         //接訊息
         socket.on('fromserver', function(data) {
             $('#msg').prepend('<li>' + data.name + ":" + data.message + '</li>');
+            fnusers(data.users);
             count(data.count);
         });
         //離線
         socket.on('offline', function(data) {
             $('#msg').prepend('<li>' + data.message + '</li>');
+            fnusers(data.users);
             count(data.count);
         });
         //人數相關
         socket.on('Usercount', function(data) {
-            $scope.ngcount = data;
+            $scope.ngcount = data.count;
+              $scope.ngusers = data.users;
         }); 
          //上傳檔案
         $('#uploadForm').submit(function() {
@@ -89,6 +97,10 @@ myapp.controller('IndexCtrl', function($scope, $timeout, $http) {
         $scope.nginmsg = ""; 
     };
     //人數相關
+     function fnusers(datausers) {
+        $scope.ngusers = datausers; 
+        //mytimeout = $timeout($scope.onTimeout, 1000);
+    };
     function count(datacount) {
         $scope.ngcount = datacount; 
         mytimeout = $timeout($scope.onTimeout, 1000);
@@ -98,6 +110,7 @@ myapp.controller('IndexCtrl', function($scope, $timeout, $http) {
         if ($scope.recount < 10) { 
             socket.emit('Usercount');
             $scope.ngcount = $scope.ngcount; 
+             $scope.ngusers = $scope.ngusers; 
             $scope.recount++;
             mytimeout = $timeout($scope.onTimeout, 1000);
         } else {

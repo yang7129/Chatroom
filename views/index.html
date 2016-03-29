@@ -44,12 +44,12 @@
             </form>
         </div>
     </div>
-    <br> 目前上線人數{{ngcount.length}}
+    <br> 目前上線人數{{ngcount}}
     <div class="overflowCss">
         <div class="imgCss">目前上線名單</div>
-        <div ng-repeat="name in ngcount" class="imgCss">
-            <div ng-if="$index -0 == 0">{{name}} </div>
-            <div ng-if="$index -0 != 0">&nbsp;,&nbsp;{{name}} </div>
+        <div ng-repeat="user in ngusers" class="imgCss">
+            <div ng-if="$index -0 == 0">{{user}} </div>
+            <div ng-if="$index -0 != 0">&nbsp;,&nbsp;{{user}} </div>
         </div>
     </div>
 

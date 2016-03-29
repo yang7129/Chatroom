@@ -62,7 +62,7 @@ io.sockets.on('connection', function(socket) {
             users.push(socket.name);
         }
         writeLog(socket.name + '進來了');
-        socket.broadcast.emit('online', { message: socket.name + '進來了', count: users });
+        socket.broadcast.emit('online', { message: socket.name + '進來了', count: users.length ,users: users });
     });
     socket.on('fromClient', function(data) {
         writeLog(data.name + ":" + data.message);
@@ -70,21 +70,21 @@ io.sockets.on('connection', function(socket) {
             socket.name = data.name;
             socket.nameindex = users.length;
             users.push(socket.name);
-            socket.broadcast.emit('online', { message: socket.name + '重新連接', count: users });
+            socket.broadcast.emit('online', { message: socket.name + '重新連接', count: users.length,users: users });
         }
-        socket.broadcast.emit('fromserver', { name: data.name, message: data.message, count: users });
+        socket.broadcast.emit('fromserver', { name: data.name, message: data.message, count: users.length ,users: users});
     });
     socket.on('disconnect', function() {
         if (socket.name === undefined) { } else {
             if (users.indexOf(socket.name) > -1) {
                 writeLog(socket.name + '離線了');
                 users.splice(socket.nameindex, 1);
-                socket.broadcast.emit('offline', { message: socket.name + '離線了', count: users });
+                socket.broadcast.emit('offline', { message: socket.name + '離線了', count: users.length ,users: users});
             }
         };
     });
     socket.on('Usercount', function() {
-        socket.broadcast.emit('Usercount', users);
+        socket.broadcast.emit('Usercount',  {  count: users.length ,users: users}  );
     });
 });
 function writeLog(msg) { 
